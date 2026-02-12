@@ -1,7 +1,7 @@
 {
   "name": "@iamnnort/config",
   "version": "1.0.0",
-  "description": "Shared presets for ESLint, Prettier, lint-staged, esbuild, tsup, and TypeScript — use in Node.js projects for consistent tooling without duplicating config.",
+  "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
     "type": "git",

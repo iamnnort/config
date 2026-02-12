@@ -1,13 +1,13 @@
 # @iamnnort/config
 
-Shared, reusable config presets for **ESLint**, **Prettier**, **lint-staged**, **esbuild**, **tsup**, and **TypeScript**. Use in your Node.js projects for consistent tooling without maintaining config in every repo.
+Config presets for Node.js — **Consistent** · **Reusable** · **Streamlined**
 
 ## Install
 
 ```bash
-yarn add @iamnnort/config
+yarn add -D @iamnnort/config
 # or
-npm i @iamnnort/config
+npm i -D @iamnnort/config
 ```
 
 ## Requirements
