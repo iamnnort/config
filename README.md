@@ -78,4 +78,4 @@ Extend in your `tsconfig.json`:
 
 ## License
 
-MIT
+MIT © [Nikita Pavets](https://github.com/iamnnort)
