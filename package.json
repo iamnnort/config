@@ -1,0 +1,74 @@
+{
+  "name": "@iamnnort/config",
+  "version": "1.0.0",
+  "description": "Config library",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamnnort/config.git"
+  },
+  "bugs": "https://github.com/iamnnort/config/issues",
+  "homepage": "https://github.com/iamnnort/config#readme",
+  "keywords": [
+    "config",
+    "eslint",
+    "prettier",
+    "lint-staged",
+    "esbuild",
+    "tsup",
+    "typescript",
+    "tsconfig"
+  ],
+  "files": [
+    "dist",
+    "tsconfig"
+  ],
+  "exports": {
+    "./esbuild": "./dist/esbuild/index.js",
+    "./eslint": "./dist/eslint/index.js",
+    "./jest": "./dist/jest/index.js",
+    "./lint-staged": "./dist/lint-staged/index.js",
+    "./prettier": "./dist/prettier/index.js",
+    "./tsup": "./dist/tsup/index.js",
+    "./tsconfig/node.json": {
+      "default": "./tsconfig/node.json"
+    },
+    "./tsconfig/nest.json": {
+      "default": "./tsconfig/nest.json"
+    },
+    "./tsconfig/browser.json": {
+      "default": "./tsconfig/browser.json"
+    }
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "node esbuild",
+    "deploy": "npm publish",
+    "lint": "eslint --fix",
+    "format": "prettier --write . --ignore-path .gitignore",
+    "test": "yarn lint",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tsconfig/node22": "^22.0.5",
+    "@typescript-eslint/parser": "^8.53.1",
+    "dotenv": "^17.2.3",
+    "esbuild-plugin-tsc": "^0.5.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "jiti": "^2.6.1",
+    "prettier": "^3.8.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "esbuild": "^0.25.2",
+    "esbuild-plugin-copy": "^2.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.1"
+  }
+}

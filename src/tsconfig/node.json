@@ -1,0 +1,17 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
+    "resolveJsonModule": true,
+
+    "paths": {
+      "@src/*": ["src/*"]
+    },
+
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false
+  }
+}
