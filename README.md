@@ -1,6 +1,6 @@
 # @iamnnort/config
 
-Config library — shared ESLint, Prettier, lint-staged, esbuild, tsup, and TypeScript configs for Node.js projects.
+Shared, reusable config presets for **ESLint**, **Prettier**, **lint-staged**, **esbuild**, **tsup**, and **TypeScript**. Use in your Node.js projects for consistent tooling without maintaining config in every repo.
 
 ## Install
 
@@ -21,29 +21,35 @@ npm i @iamnnort/config
 ```js
 // eslint.config.js
 const config = require('@iamnnort/config/eslint');
+
 module.exports = config();
-// or with overrides
-module.exports = config({ import: true });
 ```
+
+With overrides: `config({ import: true })`.
 
 ### Prettier
 
 ```js
 // prettier.config.js
-module.exports = require('@iamnnort/config/prettier')();
+const config = require('@iamnnort/config/prettier');
+
+module.exports = config();
 ```
 
 ### Lint-staged
 
 ```js
 // lint-staged.config.js
-module.exports = require('@iamnnort/config/lint-staged')();
+const config = require('@iamnnort/config/lint-staged');
+
+module.exports = config();
 ```
 
 ### Esbuild
 
 ```js
 const build = require('@iamnnort/config/esbuild');
+
 build({ entryPoints: ['./src/index.ts'] });
 ```
 
@@ -51,7 +57,9 @@ build({ entryPoints: ['./src/index.ts'] });
 
 ```js
 // tsup.config.js
-module.exports = require('@iamnnort/config/tsup')({ entry: ['src/index.ts'] });
+const config = require('@iamnnort/config/tsup');
+
+module.exports = config({ entry: ['src/index.ts'] });
 ```
 
 ### TypeScript configs
