@@ -44,31 +44,39 @@ export class HttpMessageBuilder {
     return this.response?.[paramName] || this.error?.response?.[paramName];
   }
 
+  private makeDataObjJson(data: any) {
+    return this.redactedKeys.reduce((accData, key) => {
+      if (!accData[key]) {
+        return accData;
+      }
+
+      return {
+        ...accData,
+        [key]: '[redacted]',
+      };
+    }, data);
+  }
+
   private makeDataObj(data: any) {
     if (!data) {
       return {};
     }
 
-    try {
-      const dataObj = JSON.parse(data);
-
-      return {
-        json: this.redactedKeys.reduce((accData, key) => {
-          if (!accData[key]) {
-            return accData;
-          }
-
-          return {
-            ...accData,
-            [key]: '[redacted]',
-          };
-        }, dataObj),
-      };
-    } catch (error) {
-      return {
-        text: data,
-      };
+    if (typeof data === 'string') {
+      try {
+        return {
+          json: this.makeDataObjJson(JSON.parse(data)),
+        };
+      } catch (error) {
+        return {
+          text: data,
+        };
+      }
     }
+
+    return {
+      json: this.makeDataObjJson(data),
+    };
   }
 
   makeUrlText() {
