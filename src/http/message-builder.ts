@@ -9,12 +9,14 @@ export class HttpMessageBuilder {
   private error?: AxiosError;
 
   private duration?: number;
+  private redactedKeys: string[];
 
   constructor(options: {
     request?: AxiosRequestConfig;
     response?: AxiosResponse;
     error?: AxiosError;
     duration?: number;
+    redactedKeys?: string[];
   }) {
     this.printQueue = [];
 
@@ -23,6 +25,15 @@ export class HttpMessageBuilder {
     this.error = options.error;
 
     this.duration = options.duration;
+    this.redactedKeys = [
+      'accessToken',
+      'refreshToken',
+      'apiKey',
+      'password',
+      'apiSecretKey',
+      'apiPublishableKey',
+      ...(options.redactedKeys ?? []),
+    ];
   }
 
   private getRequestParam(paramName: string) {
@@ -31,6 +42,27 @@ export class HttpMessageBuilder {
 
   private getResponseParam(paramName: string) {
     return this.response?.[paramName] || this.error?.response?.[paramName];
+  }
+
+  private makeDataObj(data: any) {
+    if (!data) {
+      return {};
+    }
+
+    if (typeof data === 'string') {
+      return {
+        text: data,
+      };
+    }
+
+    return {
+      json: this.redactedKeys.reduce((accData, key) => {
+        return {
+          ...accData,
+          [key]: '[redacted]',
+        };
+      }, data),
+    };
   }
 
   makeUrlText() {
@@ -55,46 +87,6 @@ export class HttpMessageBuilder {
 
     if (method) {
       this.printQueue.push(method.toUpperCase());
-    }
-
-    return this;
-  }
-
-  makeRequestDataText() {
-    const data = this.getRequestParam('data');
-
-    if (data) {
-      if (typeof data === 'string') {
-        this.printQueue.push(data);
-
-        return this;
-      }
-
-      if (Object.keys(data).length) {
-        this.printQueue.push(JSON.stringify(data));
-
-        return this;
-      }
-    }
-
-    return this;
-  }
-
-  makeResponseDataText() {
-    const data = this.getResponseParam('data');
-
-    if (data) {
-      if (typeof data === 'string') {
-        this.printQueue.push(data);
-
-        return this;
-      }
-
-      if (Object.keys(data).length) {
-        this.printQueue.push(JSON.stringify(data));
-
-        return this;
-      }
     }
 
     return this;
@@ -126,6 +118,18 @@ export class HttpMessageBuilder {
 
   build() {
     return this.printQueue.join(' ');
+  }
+
+  makeRequestDataObj() {
+    const data = this.getRequestParam('data');
+
+    return this.makeDataObj(data);
+  }
+
+  makeResponseDataObj() {
+    const data = this.getResponseParam('data');
+
+    return this.makeDataObj(data);
   }
 
   makeMethod() {
