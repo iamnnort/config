@@ -6,6 +6,7 @@ const run = async () => {
     entryPoints: [
       './src/esbuild/index.js',
       './src/eslint/index.js',
+      './src/http/index.ts',
       './src/jest/index.js',
       './src/lint-staged/index.js',
       './src/prettier/index.js',

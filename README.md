@@ -62,6 +62,16 @@ const config = require('@iamnnort/config/tsup');
 module.exports = config({ entry: ['src/index.ts'] });
 ```
 
+### HTTP
+
+Utilities for building HTTP log messages (axios request/response/error) and shared enums:
+
+```js
+const { HttpMessageBuilder, HttpMethods, HttpStatuses } = require('@iamnnort/config/http');
+
+const message = new HttpMessageBuilder({ request, response }).makeUrlText().makeMethodText().build();
+```
+
 ### TypeScript configs
 
 Extend in your `tsconfig.json`:
