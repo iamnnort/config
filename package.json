@@ -1,6 +1,6 @@
 {
   "name": "@iamnnort/config",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
@@ -25,13 +25,34 @@
     "tsconfig"
   ],
   "exports": {
-    "./esbuild": "./dist/esbuild/index.js",
-    "./eslint": "./dist/eslint/index.js",
-    "./http": "./dist/http/index.js",
-    "./jest": "./dist/jest/index.js",
-    "./lint-staged": "./dist/lint-staged/index.js",
-    "./prettier": "./dist/prettier/index.js",
-    "./tsup": "./dist/tsup/index.js",
+    "./esbuild": {
+      "types": "./dist/esbuild/index.d.ts",
+      "default": "./dist/esbuild/index.js"
+    },
+    "./eslint": {
+      "types": "./dist/eslint/index.d.ts",
+      "default": "./dist/eslint/index.js"
+    },
+    "./http": {
+      "types": "./dist/http/index.d.ts",
+      "default": "./dist/http/index.js"
+    },
+    "./jest": {
+      "types": "./dist/jest/index.d.ts",
+      "default": "./dist/jest/index.js"
+    },
+    "./lint-staged": {
+      "types": "./dist/lint-staged/index.d.ts",
+      "default": "./dist/lint-staged/index.js"
+    },
+    "./prettier": {
+      "types": "./dist/prettier/index.d.ts",
+      "default": "./dist/prettier/index.js"
+    },
+    "./tsup": {
+      "types": "./dist/tsup/index.d.ts",
+      "default": "./dist/tsup/index.js"
+    },
     "./tsconfig/node.json": {
       "default": "./tsconfig/node.json"
     },
@@ -46,7 +67,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node esbuild",
+    "build": "tsup",
     "deploy": "npm publish",
     "lint": "eslint --fix",
     "format": "prettier --write . --ignore-path .gitignore",
@@ -64,14 +85,14 @@
     "jiti": "^2.6.1",
     "prettier": "^3.8.1",
     "tsup": "^8.4.0",
-    "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.10",
     "esbuild": "^0.25.2",
-    "esbuild-plugin-copy": "^2.1.1",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.1"
+    "lint-staged": "^15.5.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
   }
 }
