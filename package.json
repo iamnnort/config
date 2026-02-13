@@ -1,6 +1,6 @@
 {
   "name": "@iamnnort/config",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
@@ -26,32 +26,26 @@
   ],
   "exports": {
     "./esbuild": {
-      "types": "./dist/esbuild/index.d.ts",
       "default": "./dist/esbuild/index.js"
     },
     "./eslint": {
-      "types": "./dist/eslint/index.d.ts",
       "default": "./dist/eslint/index.js"
+    },
+    "./jest": {
+      "default": "./dist/jest/index.js"
+    },
+    "./lint-staged": {
+      "default": "./dist/lint-staged/index.js"
+    },
+    "./prettier": {
+      "default": "./dist/prettier/index.js"
+    },
+    "./tsup": {
+      "default": "./dist/tsup/index.js"
     },
     "./http": {
       "types": "./dist/http/index.d.ts",
       "default": "./dist/http/index.js"
-    },
-    "./jest": {
-      "types": "./dist/jest/index.d.ts",
-      "default": "./dist/jest/index.js"
-    },
-    "./lint-staged": {
-      "types": "./dist/lint-staged/index.d.ts",
-      "default": "./dist/lint-staged/index.js"
-    },
-    "./prettier": {
-      "types": "./dist/prettier/index.d.ts",
-      "default": "./dist/prettier/index.js"
-    },
-    "./tsup": {
-      "types": "./dist/tsup/index.d.ts",
-      "default": "./dist/tsup/index.js"
     },
     "./tsconfig/node.json": {
       "default": "./tsconfig/node.json"
@@ -88,6 +82,7 @@
     "typescript-eslint": "^8.53.1"
   },
   "devDependencies": {
+    "@swc/core": "^1.15.11",
     "@types/node": "^25.0.10",
     "esbuild": "^0.25.2",
     "husky": "^9.1.7",
