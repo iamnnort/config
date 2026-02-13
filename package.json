@@ -1,6 +1,6 @@
 {
   "name": "@iamnnort/config",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
@@ -25,24 +25,12 @@
     "tsconfig"
   ],
   "exports": {
-    "./esbuild": {
-      "default": "./dist/esbuild/index.js"
-    },
-    "./eslint": {
-      "default": "./dist/eslint/index.js"
-    },
-    "./jest": {
-      "default": "./dist/jest/index.js"
-    },
-    "./lint-staged": {
-      "default": "./dist/lint-staged/index.js"
-    },
-    "./prettier": {
-      "default": "./dist/prettier/index.js"
-    },
-    "./tsup": {
-      "default": "./dist/tsup/index.js"
-    },
+    "./esbuild": "./dist/esbuild/index.js",
+    "./eslint": "./dist/eslint/index.js",
+    "./jest": "./dist/jest/index.js",
+    "./lint-staged": "./dist/lint-staged/index.js",
+    "./prettier": "./dist/prettier/index.js",
+    "./tsup": "./dist/tsup/index.js",
     "./http": {
       "types": "./dist/http/index.d.ts",
       "default": "./dist/http/index.js"
