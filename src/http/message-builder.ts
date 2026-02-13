@@ -49,20 +49,26 @@ export class HttpMessageBuilder {
       return {};
     }
 
-    if (typeof data === 'string') {
+    try {
+      const dataObj = JSON.parse(data);
+
+      return {
+        json: this.redactedKeys.reduce((accData, key) => {
+          if (!accData[key]) {
+            return accData;
+          }
+
+          return {
+            ...accData,
+            [key]: '[redacted]',
+          };
+        }, dataObj),
+      };
+    } catch (error) {
       return {
         text: data,
       };
     }
-
-    return {
-      json: this.redactedKeys.reduce((accData, key) => {
-        return {
-          ...accData,
-          [key]: '[redacted]',
-        };
-      }, data),
-    };
   }
 
   makeUrlText() {
