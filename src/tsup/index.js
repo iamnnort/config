@@ -8,6 +8,7 @@ module.exports = (config) => {
         ...config,
         entry,
         format: ['cjs', 'esm'],
+        cjsInterop: true,
         dts: true,
         minify: true,
         splitting: true,

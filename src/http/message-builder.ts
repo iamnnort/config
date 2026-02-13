@@ -41,7 +41,7 @@ export class HttpMessageBuilder {
     if (url) {
       if (params) {
         delete params['0'];
-        this.printQueue.push([url, paramsSerializer(params)].filter((_) => _).join('?'));
+        this.printQueue.push([url, paramsSerializer.serialize(params)].filter((_) => _).join('?'));
       } else {
         this.printQueue.push(url);
       }
