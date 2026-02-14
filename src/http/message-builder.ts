@@ -53,19 +53,23 @@ export class HttpMessageBuilder {
         };
       }
 
-      try {
-        JSON.parse(data[key]);
+      if (typeof data === 'string') {
+        try {
+          JSON.parse(data[key]);
 
-        return {
-          ...accData,
-          [key]: '[compressed]',
-        };
-      } catch (error) {
-        return {
-          ...accData,
-          [key]: data[key],
-        };
+          return {
+            ...accData,
+            [key]: '[compressed]',
+          };
+        } catch (error) {
+          //
+        }
       }
+
+      return {
+        ...accData,
+        [key]: data[key],
+      };
     }, {});
   }
 
