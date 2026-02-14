@@ -45,6 +45,17 @@ const config = require('@iamnnort/config/lint-staged');
 module.exports = config();
 ```
 
+### Jest
+
+```js
+// jest.config.js
+const config = require('@iamnnort/config/jest');
+
+module.exports = config();
+```
+
+With global setup: `config({ global: true })`.
+
 ### Esbuild
 
 ```js
@@ -64,12 +75,15 @@ module.exports = config({ entry: ['src/index.ts'] });
 
 ### HTTP
 
-Utilities for building HTTP log messages (axios request/response/error) and shared enums:
+HTTP log message builder and shared enums (methods, statuses):
 
 ```js
 const { HttpMessageBuilder, HttpMethods, HttpStatuses } = require('@iamnnort/config/http');
 
-const message = new HttpMessageBuilder({ request, response }).makeUrlText().makeMethodText().build();
+const message = new HttpMessageBuilder({ request, response })
+  .makeUrlText()
+  .makeMethodText()
+  .build();
 ```
 
 ### TypeScript configs
