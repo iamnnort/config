@@ -53,7 +53,7 @@ export class HttpMessageBuilder {
         };
       }
 
-      if (typeof data === 'string') {
+      if (typeof data[key] === 'string') {
         try {
           JSON.parse(data[key]);
 
