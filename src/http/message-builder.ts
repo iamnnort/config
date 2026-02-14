@@ -45,16 +45,28 @@ export class HttpMessageBuilder {
   }
 
   private makeDataObjJson(data: any) {
-    return this.redactedKeys.reduce((accData, key) => {
-      if (!accData[key]) {
-        return accData;
+    return Object.keys(data).reduce((accData, key) => {
+      if (this.redactedKeys.includes(key)) {
+        return {
+          ...accData,
+          [key]: '[redacted]',
+        };
       }
 
-      return {
-        ...accData,
-        [key]: '[redacted]',
-      };
-    }, data);
+      try {
+        JSON.parse(data[key]);
+
+        return {
+          ...accData,
+          [key]: '[compressed]',
+        };
+      } catch (error) {
+        return {
+          ...accData,
+          [key]: data[key],
+        };
+      }
+    }, {});
   }
 
   private makeDataObj(data: any) {
