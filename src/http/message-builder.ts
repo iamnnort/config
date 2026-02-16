@@ -78,6 +78,10 @@ export class HttpMessageBuilder {
       return {};
     }
 
+    if (data === '{}') {
+      return {};
+    }
+
     if (typeof data === 'string') {
       try {
         return {
