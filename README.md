@@ -75,15 +75,18 @@ module.exports = config({ entry: ['src/index.ts'] });
 
 ### HTTP
 
-HTTP log message builder and shared enums (methods, statuses):
+HTTP message builder and shared enums (methods, statuses):
 
 ```js
 const { HttpMessageBuilder, HttpMethods, HttpStatuses } = require('@iamnnort/config/http');
 
-const message = new HttpMessageBuilder({ request, response })
-  .makeUrlText()
-  .makeMethodText()
-  .build();
+const builder = new HttpMessageBuilder({ request, response, error, duration, redactedKeys: ['secret'] });
+
+// Build a log line
+const message = builder.makeUrlText().makeMethodText().makeStatusText().makeDurationText().build();
+
+// Extract structured data
+const responseObj = builder.makeResponse();
 ```
 
 ### TypeScript configs

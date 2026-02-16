@@ -78,25 +78,15 @@ export class HttpMessageBuilder {
       return {};
     }
 
-    if (data === '{}') {
-      return {};
-    }
-
     if (typeof data === 'string') {
       try {
-        return {
-          json: this.makeDataObjJson(JSON.parse(data)),
-        };
+        return this.makeDataObjJson(JSON.parse(data));
       } catch (error) {
-        return {
-          text: data,
-        };
+        return data;
       }
     }
 
-    return {
-      json: this.makeDataObjJson(data),
-    };
+    return this.makeDataObjJson(data);
   }
 
   makeUrlText() {
