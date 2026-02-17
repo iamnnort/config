@@ -33,7 +33,17 @@ function resolveConfig(config) {
 function getCommonConfig() {
   return {
     bundle: true,
-    external: ['aws-sdk', '@nestjs/microservices', '@nestjs/websockets', 'class-transformer', 'class-validator'],
+    external: [
+      'aws-sdk',
+      '@nestjs/microservices',
+      '@nestjs/websockets',
+      'class-transformer',
+      'class-validator',
+      'pino',
+      'pino-pretty',
+      'pino-http',
+      'thread-stream',
+    ],
     platform: 'node',
     plugins: [esbuildPluginTsc({ force: true })],
     sourcemap: true,
