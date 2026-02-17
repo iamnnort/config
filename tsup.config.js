@@ -10,5 +10,10 @@ module.exports = config({
     './src/prettier/index.js',
     './src/tsup/index.js',
   ],
-  publicDir: './src/tsconfig',
+  copy: [
+    {
+      from: './tsconfig/*',
+      to: './tsconfig',
+    },
+  ],
 });

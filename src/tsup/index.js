@@ -1,4 +1,5 @@
 const { defineConfig } = require('tsup');
+const { copy } = require('esbuild-plugin-copy');
 const { chunk } = require('../lib');
 
 module.exports = (config) => {
@@ -13,6 +14,11 @@ module.exports = (config) => {
         minify: true,
         splitting: true,
         sourcemap: true,
+        esbuildPlugins: [
+          copy({
+            assets: config.copy || [],
+          }),
+        ],
         esbuildOptions: (options) => {
           options.outbase = 'src';
         },
