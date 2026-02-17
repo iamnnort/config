@@ -6,12 +6,12 @@ module.exports = (config) => {
   return defineConfig(
     chunk(config.entry).map((entry) => {
       return {
+        minify: true,
         ...config,
         entry,
         format: ['cjs', 'esm'],
         cjsInterop: true,
         dts: true,
-        minify: true,
         splitting: true,
         sourcemap: true,
         esbuildPlugins: [
