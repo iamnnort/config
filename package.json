@@ -1,6 +1,6 @@
 {
   "name": "@iamnnort/config",
-  "version": "1.1.16",
+  "version": "1.2.0",
   "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
@@ -14,7 +14,6 @@
     "eslint",
     "prettier",
     "lint-staged",
-    "esbuild",
     "tsup",
     "typescript",
     "tsconfig",
@@ -25,10 +24,6 @@
     "tsconfig"
   ],
   "exports": {
-    "./esbuild": {
-      "types": "./dist/esbuild/index.d.ts",
-      "default": "./dist/esbuild/index.js"
-    },
     "./eslint": {
       "types": "./dist/eslint/index.d.ts",
       "default": "./dist/eslint/index.js"
@@ -80,7 +75,6 @@
     "axios": "^1.13.5",
     "dotenv": "^17.2.3",
     "esbuild-plugin-copy": "^2.1.1",
-    "esbuild-plugin-tsc": "^0.5.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "jiti": "^2.6.1",
@@ -91,7 +85,6 @@
   "devDependencies": {
     "@swc/core": "^1.15.11",
     "@types/node": "^25.0.10",
-    "esbuild": "^0.25.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
     "tsup": "^8.4.0",

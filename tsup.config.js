@@ -2,7 +2,6 @@ const config = require('./src/tsup');
 
 module.exports = config({
   entry: [
-    './src/esbuild/index.js',
     './src/eslint/index.js',
     './src/http/index.ts',
     './src/jest/index.js',
