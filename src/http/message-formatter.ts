@@ -39,37 +39,6 @@ export class HttpMessageFormatter {
     },
   };
 
-  private makeExtraValue(value: unknown): string {
-    if (typeof value === 'object' && value !== null) {
-      return JSON.stringify(value, null, 2);
-    }
-
-    return String(value);
-  }
-
-  private makeExtraLine(key: string, value: unknown): string {
-    const extraValue = this.makeExtraValue(value);
-
-    const extraIndentedValue = extraValue
-      .split('\n')
-      .map((line) => `      ${line}`)
-      .join('\n');
-
-    return `    ${key}:\n${extraIndentedValue}`;
-  }
-
-  private makeExtra(data: Record<string, unknown>): string {
-    const extraLines = Object.entries(data).reduce((accLines, [key, value]) => {
-      if (this.ignoredKeys.includes(key)) {
-        return accLines;
-      }
-
-      return [...accLines, this.makeExtraLine(key, value)];
-    }, [] as string[]);
-
-    return extraLines.join('\n');
-  }
-
   private makeLevelLabel(log: any): string {
     return this.levelMap[log.level]?.label || 'INFO';
   }
@@ -86,7 +55,7 @@ export class HttpMessageFormatter {
     return log.msg || '';
   }
 
-  private makeTitle(log: any): string {
+  private makeMessageTitle(log: any): string {
     const name = this.makeName(log);
 
     if (name) {
@@ -94,6 +63,37 @@ export class HttpMessageFormatter {
     }
 
     return `${this.makeLevelLabel(log)}: ${this.makeMessage(log)}`;
+  }
+
+  private makeMessageExtraValue(value: unknown): string {
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    return String(value);
+  }
+
+  private makeMessageExtraLine(key: string, value: unknown): string {
+    const extraValue = this.makeMessageExtraValue(value);
+
+    const extraIndentedValue = extraValue
+      .split('\n')
+      .map((line) => `      ${line}`)
+      .join('\n');
+
+    return `    ${key}:\n${extraIndentedValue}`;
+  }
+
+  private makeMessageExtra(data: Record<string, unknown>): string {
+    const extraLines = Object.entries(data).reduce((accLines, [key, value]) => {
+      if (this.ignoredKeys.includes(key)) {
+        return accLines;
+      }
+
+      return [...accLines, this.makeMessageExtraLine(key, value)];
+    }, [] as string[]);
+
+    return extraLines.join('\n');
   }
 
   private makeDataExtra(data: Record<string, unknown>): Record<string, unknown> {
@@ -123,6 +123,14 @@ export class HttpMessageFormatter {
   }
 
   makeLogStream() {
+    if (process.env.NODE_ENV === 'production') {
+      return this.makeDataLogStream();
+    }
+
+    return this.makeMessageLogStream();
+  }
+
+  makeMessageLogStream() {
     return {
       write: (msg: string) => {
         try {
@@ -130,21 +138,23 @@ export class HttpMessageFormatter {
 
           const output: string[] = [];
 
-          const title = this.makeTitle(log);
+          const title = this.makeMessageTitle(log);
 
           if (title) {
             output.push(title);
           }
 
-          const extra = this.makeExtra(log);
+          const extra = this.makeMessageExtra(log);
 
           if (extra) {
             output.push(extra);
           }
 
+          const message = output.join('\n');
+
           const levelLog = this.makeLevelLog(log);
 
-          levelLog(output.join('\n'));
+          levelLog(message);
         } catch {
           console.error(msg);
         }
@@ -152,7 +162,7 @@ export class HttpMessageFormatter {
     };
   }
 
-  makeLambdaLogStream() {
+  makeDataLogStream() {
     return {
       write: (msg: string) => {
         try {
