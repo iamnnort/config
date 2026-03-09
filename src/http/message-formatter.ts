@@ -142,8 +142,6 @@ export class HttpMessageFormatter {
             output.push(extra);
           }
 
-          output.push('');
-
           const levelLog = this.makeLevelLog(log);
 
           levelLog(output.join('\n'));
