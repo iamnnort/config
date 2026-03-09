@@ -12,13 +12,31 @@ export class HttpMessageFormatter {
     'reqId',
   ];
 
-  private levelMap: Record<number, string> = {
-    10: 'TRACE',
-    20: 'DEBUG',
-    30: 'INFO',
-    40: 'WARN',
-    50: 'ERROR',
-    60: 'FATAL',
+  private levelMap: Record<number, { label: string; log: (...data: any[]) => void }> = {
+    10: {
+      label: 'TRACE',
+      log: console.trace,
+    },
+    20: {
+      label: 'DEBUG',
+      log: console.debug,
+    },
+    30: {
+      label: 'INFO',
+      log: console.info,
+    },
+    40: {
+      label: 'WARN',
+      log: console.warn,
+    },
+    50: {
+      label: 'ERROR',
+      log: console.error,
+    },
+    60: {
+      label: 'FATAL',
+      log: console.error,
+    },
   };
 
   private makeExtraValue(value: unknown): string {
@@ -41,7 +59,7 @@ export class HttpMessageFormatter {
   }
 
   private makeExtra(data: Record<string, unknown>): string {
-    const lines = Object.entries(data).reduce((accLines, [key, value]) => {
+    const extraLines = Object.entries(data).reduce((accLines, [key, value]) => {
       if (this.ignoredKeys.includes(key)) {
         return accLines;
       }
@@ -49,19 +67,59 @@ export class HttpMessageFormatter {
       return [...accLines, this.makeExtraLine(key, value)];
     }, [] as string[]);
 
-    return lines.join('\n');
+    return extraLines.join('\n');
   }
 
-  private makeLevel(log: any): string {
-    return this.levelMap[log.level] || 'INFO';
+  private makeLevelLabel(log: any): string {
+    return this.levelMap[log.level]?.label || 'INFO';
+  }
+
+  private makeLevelLog(log: any): (...data: any[]) => void {
+    return this.levelMap[log.level]?.log || console.info;
   }
 
   private makeName(log: any): string {
-    return log.name ? ` (${log.name})` : '';
+    return log.name || '';
+  }
+
+  private makeMessage(log: any): string {
+    return log.msg || '';
   }
 
   private makeTitle(log: any): string {
-    return `${this.makeLevel(log)}${this.makeName(log)}: ${log.msg}`;
+    const name = this.makeName(log);
+
+    if (name) {
+      return `${this.makeLevelLabel(log)} (${this.makeName(log)}): ${this.makeMessage(log)}`;
+    }
+
+    return `${this.makeLevelLabel(log)}: ${this.makeMessage(log)}`;
+  }
+
+  private makeDataExtra(data: Record<string, unknown>): Record<string, unknown> {
+    const extra = Object.entries(data).reduce(
+      (accExtra, [key, value]) => {
+        if (this.ignoredKeys.includes(key)) {
+          return accExtra;
+        }
+
+        return { ...accExtra, [key]: value };
+      },
+      {} as Record<string, unknown>,
+    );
+
+    return extra;
+  }
+
+  private makeData(log: any): any {
+    const data = {
+      level: this.makeLevelLabel(log),
+      name: this.makeName(log),
+      message: this.makeMessage(log),
+      ...this.makeDataExtra(log),
+    };
+
+    return data;
   }
 
   makeLogStream() {
@@ -86,9 +144,29 @@ export class HttpMessageFormatter {
 
           output.push('');
 
-          process.stdout.write(output.join('\n'));
+          const levelLog = this.makeLevelLog(log);
+
+          levelLog(output.join('\n'));
         } catch {
-          process.stdout.write(msg);
+          console.error(msg);
+        }
+      },
+    };
+  }
+
+  makeLambdaLogStream() {
+    return {
+      write: (msg: string) => {
+        try {
+          const log = JSON.parse(msg);
+
+          const data = this.makeData(log);
+
+          const levelLog = this.makeLevelLog(log);
+
+          levelLog(data);
+        } catch {
+          console.error(msg);
         }
       },
     };
