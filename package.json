@@ -1,6 +1,6 @@
 {
   "name": "@iamnnort/config",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "description": "Config presets for Node.js - Consistent - Reusable - Streamlined",
   "license": "MIT",
   "repository": {
@@ -59,7 +59,7 @@
     }
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "build": "tsup",
@@ -70,7 +70,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@tsconfig/node22": "^22.0.5",
+    "@tsconfig/node24": "^24.0.4",
     "@typescript-eslint/parser": "^8.53.1",
     "axios": "^1.13.5",
     "dotenv": "^17.2.3",

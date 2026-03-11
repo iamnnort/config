@@ -12,7 +12,7 @@ npm i -D @iamnnort/config
 
 ## Requirements
 
-- **Node.js** ≥ 22
+- **Node.js** ≥ 24
 
 ## Usage
 
