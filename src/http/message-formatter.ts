@@ -172,7 +172,7 @@ export class HttpMessageFormatter {
 
           const levelLog = this.makeLevelLog(log);
 
-          levelLog(data);
+          levelLog(JSON.stringify(data, null, 2));
         } catch {
           console.error(msg);
         }
