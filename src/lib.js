@@ -12,7 +12,7 @@ module.exports.named = (entries) => {
   const namedEntries = [];
 
   for (const entry of entries) {
-    namedEntries.push([entry.replace(/^src\//, '').replace(/\.ts$/, ''), entry]);
+    namedEntries.push([entry.replace(/^.*src\//, '').replace(/\.(t|j)s$/, ''), entry]);
   }
 
   return namedEntries;
