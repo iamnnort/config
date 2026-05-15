@@ -7,3 +7,13 @@ module.exports.chunk = (array, size = 10) => {
 
   return chunks;
 };
+
+module.exports.named = (entries) => {
+  const namedEntries = [];
+
+  for (const entry of entries) {
+    namedEntries.push([entry.replace(/^src\//, '').replace(/\.ts$/, ''), entry]);
+  }
+
+  return namedEntries;
+};

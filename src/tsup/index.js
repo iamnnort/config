@@ -1,14 +1,16 @@
 const { defineConfig } = require('tsup');
 const { copy } = require('esbuild-plugin-copy');
-const { chunk } = require('../lib');
+const { chunk, named } = require('../lib');
 
 module.exports = (config) => {
+  const namedEntries = named(config.entry);
+
   return defineConfig(
-    chunk(config.entry).map((entry) => {
+    chunk(namedEntries).map((namedEntriesChunk) => {
       return {
         minify: true,
         ...config,
-        entry,
+        entry: Object.fromEntries(namedEntriesChunk),
         format: ['cjs', 'esm'],
         cjsInterop: true,
         dts: true,
@@ -19,9 +21,6 @@ module.exports = (config) => {
             assets: config.copy || [],
           }),
         ],
-        esbuildOptions: (options) => {
-          options.outbase = 'src';
-        },
       };
     }),
   );
