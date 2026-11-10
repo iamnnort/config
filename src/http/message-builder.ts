@@ -1,6 +1,28 @@
 import { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { HttpMethods, HttpStatuses } from './types';
 
+const REDACTED = '[redacted]';
+const COMPRESSED = '[compressed]';
+
+export const DEFAULT_REDACTED_KEYS = [
+  'accessToken',
+  'refreshToken',
+  'apiKey',
+  'password',
+  'secretKey',
+  'clientSecret',
+  'privateKey',
+  'apiSecretKey',
+  'apiPublishableKey',
+  'botTgToken',
+  'botMaxToken',
+  'providerToken',
+];
+
+export type HttpDataObj = Record<string, unknown> | unknown[] | string;
+
+const normalizeKey = (key: string) => key.toLowerCase().replace(/[^a-z0-9]/g, '');
+
 export class HttpMessageBuilder {
   private printQueue: string[];
 
@@ -9,7 +31,8 @@ export class HttpMessageBuilder {
   private error?: AxiosError;
 
   private duration?: number;
-  private redactedKeys: string[];
+  private redactedKeys: Set<string>;
+  private redactedValues: string[];
 
   constructor(options: {
     request?: AxiosRequestConfig;
@@ -17,6 +40,7 @@ export class HttpMessageBuilder {
     error?: AxiosError;
     duration?: number;
     redactedKeys?: string[];
+    redactedValues?: (string | null | undefined)[];
   }) {
     this.printQueue = [];
 
@@ -25,15 +49,16 @@ export class HttpMessageBuilder {
     this.error = options.error;
 
     this.duration = options.duration;
-    this.redactedKeys = [
-      'accessToken',
-      'refreshToken',
-      'apiKey',
-      'password',
-      'apiSecretKey',
-      'apiPublishableKey',
-      ...(options.redactedKeys ?? []),
-    ];
+
+    this.redactedKeys = new Set(
+      [...DEFAULT_REDACTED_KEYS, ...(options.redactedKeys ?? [])].map(normalizeKey).filter(Boolean),
+    );
+
+    const redactedValues = (options.redactedValues ?? [])
+      .filter((value): value is string => !!value)
+      .flatMap((value) => [value, encodeURIComponent(value)]);
+
+    this.redactedValues = [...new Set(redactedValues)].sort((a, b) => b.length - a.length);
   }
 
   private getRequestParam(paramName: string) {
@@ -44,49 +69,68 @@ export class HttpMessageBuilder {
     return this.response?.[paramName] || this.error?.response?.[paramName];
   }
 
-  private makeDataObjJson(data: any) {
-    return Object.keys(data).reduce((accData, key) => {
-      if (this.redactedKeys.includes(key)) {
-        return {
-          ...accData,
-          [key]: '[redacted]',
-        };
-      }
-
-      if (typeof data[key] === 'string' && (data[key].startsWith('{') || data[key].startsWith('['))) {
-        try {
-          JSON.parse(data[key]);
-
-          return {
-            ...accData,
-            [key]: '[compressed]',
-          };
-        } catch (error) {
-          //
-        }
-      }
-
-      return {
-        ...accData,
-        [key]: data[key],
-      };
-    }, {});
+  private isRedactedKey(key: string) {
+    return key.split(/\[|\]|%5B|%5D/i).some((part) => this.redactedKeys.has(normalizeKey(part)));
   }
 
-  private makeDataObj(data: any) {
+  private redactText(text: string) {
+    return this.redactedValues.reduce((result, value) => result.split(value).join(REDACTED), text);
+  }
+
+  private redactQuery(query: string) {
+    return query
+      .split('&')
+      .map((pair) => {
+        const [key] = pair.split('=');
+
+        return pair.includes('=') && this.isRedactedKey(key) ? `${key}=${REDACTED}` : pair;
+      })
+      .join('&');
+  }
+
+  private redactData(data: unknown): unknown {
+    if (Array.isArray(data)) {
+      return data.map((item) => this.redactData(item));
+    }
+
+    if (typeof data === 'string') {
+      try {
+        return /^[[{]/.test(data) && JSON.parse(data) ? COMPRESSED : this.redactText(data);
+      } catch {
+        return this.redactText(data);
+      }
+    }
+
+    if (Object.prototype.toString.call(data) === '[object Object]') {
+      return Object.fromEntries(
+        Object.entries(data as object).map(([key, value]) => [
+          key,
+          this.isRedactedKey(key) ? REDACTED : this.redactData(value),
+        ]),
+      );
+    }
+
+    return data;
+  }
+
+  private makeDataObj(data: unknown): HttpDataObj {
     if (!data) {
       return {};
     }
 
     if (typeof data === 'string') {
       try {
-        return this.makeDataObjJson(JSON.parse(data));
-      } catch (error) {
-        return data;
+        return this.makeDataObj(JSON.parse(data));
+      } catch {
+        return this.redactText(data.includes('=') && !/\s/.test(data) ? this.redactQuery(data) : data);
       }
     }
 
-    return this.makeDataObjJson(data);
+    if (typeof data !== 'object') {
+      return {};
+    }
+
+    return this.redactData(Array.isArray(data) ? data : { ...data }) as HttpDataObj;
   }
 
   makeUrlText() {
@@ -97,10 +141,12 @@ export class HttpMessageBuilder {
     if (url) {
       if (params) {
         delete params['0'];
-        this.printQueue.push([url, paramsSerializer.serialize(params)].filter((_) => _).join('?'));
-      } else {
-        this.printQueue.push(url);
       }
+
+      const [path, ...urlQuery] = url.split('?');
+      const query = [urlQuery.join('?'), params && paramsSerializer.serialize(params)].filter(Boolean).join('&');
+
+      this.printQueue.push(this.redactText(query ? `${path}?${this.redactQuery(query)}` : path));
     }
 
     return this;

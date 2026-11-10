@@ -80,7 +80,14 @@ HTTP message builder and shared enums (methods, statuses):
 ```js
 const { HttpMessageBuilder, HttpMethods, HttpStatuses } = require('@iamnnort/config/http');
 
-const builder = new HttpMessageBuilder({ request, response, error, duration, redactedKeys: ['secret'] });
+const builder = new HttpMessageBuilder({
+  request,
+  response,
+  error,
+  duration,
+  redactedKeys: ['secret'], 
+  redactedValues: [process.env.BOT_TOKEN],
+});
 
 // Build a log line
 const message = builder.makeUrlText().makeMethodText().makeStatusText().makeDurationText().build();
