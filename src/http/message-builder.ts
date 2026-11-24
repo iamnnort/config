@@ -3,6 +3,9 @@ import { HttpMethods, HttpStatuses } from './types';
 
 const REDACTED = '[redacted]';
 const COMPRESSED = '[compressed]';
+const CIRCULAR = '[circular]';
+const TRUNCATED = '[truncated]';
+const MAX_REDACT_DEPTH = 20;
 
 export const DEFAULT_REDACTED_KEYS = [
   'accessToken',
@@ -88,11 +91,7 @@ export class HttpMessageBuilder {
       .join('&');
   }
 
-  private redactData(data: unknown): unknown {
-    if (Array.isArray(data)) {
-      return data.map((item) => this.redactData(item));
-    }
-
+  private redactData(data: unknown, ancestors = new WeakSet<object>(), depth = 0): unknown {
     if (typeof data === 'string') {
       try {
         return /^[[{]/.test(data) && JSON.parse(data) ? COMPRESSED : this.redactText(data);
@@ -101,16 +100,37 @@ export class HttpMessageBuilder {
       }
     }
 
-    if (Object.prototype.toString.call(data) === '[object Object]') {
-      return Object.fromEntries(
-        Object.entries(data as object).map(([key, value]) => [
-          key,
-          this.isRedactedKey(key) ? REDACTED : this.redactData(value),
-        ]),
-      );
+    const isArray = Array.isArray(data);
+    const isObject = Object.prototype.toString.call(data) === '[object Object]';
+
+    if (!isArray && !isObject) {
+      return data;
     }
 
-    return data;
+    const node = data as object;
+
+    if (ancestors.has(node)) {
+      return CIRCULAR;
+    }
+
+    if (depth >= MAX_REDACT_DEPTH) {
+      return TRUNCATED;
+    }
+
+    ancestors.add(node);
+
+    const result = isArray
+      ? (node as unknown[]).map((item) => this.redactData(item, ancestors, depth + 1))
+      : Object.fromEntries(
+          Object.entries(node).map(([key, value]) => [
+            key,
+            this.isRedactedKey(key) ? REDACTED : this.redactData(value, ancestors, depth + 1),
+          ]),
+        );
+
+    ancestors.delete(node);
+
+    return result;
   }
 
   private makeDataObj(data: unknown): HttpDataObj {
